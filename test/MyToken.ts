@@ -14,9 +14,10 @@ describe("MyToken", function () {
   describe("MyToken test", function () {
     beforeEach(async() => {
         
-        [account1, account1] = await ethers.getSigners();
+        [account1, account2] = await ethers.getSigners();
+        console.log("account1:", account1, "account2:", account2);
         const MyToken = await ethers.getContractFactory("MyToken");
-        myTokenContract = await MyToken.deploy(initialSupply);
+        myTokenContract = await MyToken.connect(account2).deploy(initialSupply);
         myTokenContract.waitForDeployment();
         const addr = await myTokenContract.getAddress()
         expect(addr).to.length.greaterThan(0);
@@ -41,11 +42,14 @@ describe("MyToken", function () {
         // const account1 = await myTokenContract.getBalance()
         // const banlance1 = await myTokenContract.getBalance;
         // expect(banlance1).to.equal(initialSupply)
-        myTokenContract.transfer(account1, initialSupply/2);
+        await myTokenContract.transfer(account1, initialSupply/2);
 
         const balance2 = await myTokenContract.balanceOf(account2);
+        const balance1 = await myTokenContract.balanceOf(account1);
+        console.log('balance1 is:',balance1);
         console.log('balance2 is:',balance2);
         expect(balance2).to.equal(initialSupply/2);
+        expect(balance1).to.equal(initialSupply/2);
             // console.log("i am test1");
         //   const { lock, unlockTime } = await loadFixture(deployOneYearLockFixture);
 
